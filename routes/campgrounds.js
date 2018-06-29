@@ -83,33 +83,6 @@ router.get("/", function(req, res){
     }
 });
 
-// router.get("/", function(req, res){
-//     var noMatch = null;
-//     if(req.query.search){
-//         const regex = new RegExp(escapeRegex(req.query.search), "gi");
-//         Campground.find({name: regex}, function(err, allCampgrounds){
-//             if(err){
-//                 console.log(err);
-//             } else {
-//                 if(allCampgrounds.length < 1) {
-//                     noMatch = "No campgrounds match that query, please try again.";
-//                 }
-//                 return res.render("campgrounds/index", {campgrounds: allCampgrounds, page: "campgrounds", noMatch: noMatch});
-//             }
-//         });
-//     } else {
-//         // Get all campgrounds from DB
-//         Campground.find({}, function(err, allCampgrounds){
-//             if(err){
-//                 console.log(err);
-//             } else {
-//                 res.render("campgrounds/index", {campgrounds: allCampgrounds, page: "campgrounds", noMatch: noMatch});
-//             }
-//         });
-//     }
-// });
-
-
 //CREATE - add new campground to DB
 router.post("/", middleware.isLoggedIn, upload.single("image"), function(req, res){
     // get data from form and add to campgrounds array
@@ -231,7 +204,8 @@ router.delete("/:id", middleware.checkCampgroundOwnership, function(req, res){
             campground.remove();
             req.flash("success", "Campground deleted successfully!");
             res.redirect("/campgrounds");
-        } catch {
+        }
+        catch(err) {
             if(err){
                 req.flash("error", err.message);
                 return res.redirect("/campgrounds");

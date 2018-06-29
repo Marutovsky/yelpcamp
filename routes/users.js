@@ -93,7 +93,7 @@ router.delete("/:id", middleware.checkProfileOwnership, function(req, res){
             user.remove();
             req.flash("success", "User deleted successfully!");
             res.redirect("/campgrounds");
-        } catch {
+        } catch(err) {
             if(err){
                 req.flash("error", err.message);
                 return res.redirect("back");
