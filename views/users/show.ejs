@@ -1,0 +1,33 @@
+<% include ../partials/header %>
+
+<div class="row">
+    <div class="col-md-4">
+        <h1><%= user.firstName + " " + user.lastName %></h1>
+        <h4><em><%= user.username %></em></h4>
+        <div class="card mb-3">
+            <img class="card-img-top" src="<%= user.avatar %>" alt="user profile image">
+            <div class="card-body">
+                <div class="figure-caption">
+                    <a href="mailto:<%= user.email %>"><%= user.email %></a>
+                </div>
+                <hr>
+                <p class="card-text"><%= user.description %></p>
+            </div>
+        </div>
+        <% if(currentUser && user._id.equals(currentUser._id) || currentUser && currentUser.isAdmin){ %>
+            <a class="btn btn-xs btn-warning" href="/users/<%= user.id %>/edit">Edit Profile</a>
+            <form class="delete-form" action="/users/<%= user._id %>?_method=DELETE" method="POST">
+                <input class="btn btn-xs btn-danger pull-right" type="submit" value="Delete Profile"> 
+            </form>
+        <% } %>
+    </div>
+    <div class="col-md-8">
+        <h3><%= user.username %>'s campgrounds</h3>
+        <ul>
+            <% campgrounds.forEach(function(campground){ %>
+                <li><a href="/campgrounds/<%= campground.id %>"><%= campground.name %></a></li>
+            <% }); %>
+        </ul>
+    </div>
+</div>
+<% include ../partials/footer %>

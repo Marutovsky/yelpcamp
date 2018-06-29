@@ -1,0 +1,140 @@
+<% include ../partials/header %>
+
+<div class="row">
+    <div class="col-md-3">
+        <div id="map"></div>
+    </div>
+    <div class="col-md-9">
+        <div class="card mb-3">
+            <img class="card-img-top" src="<%= campground.image %>" alt="<%= campground.image %>">
+                
+            <div class="card-body">
+                <h5 class="float-right">$<%= campground.price %>/night</h5>
+                <h4 class="card-title mb-0"><a><%= campground.name %></a></h4>
+                <hr>
+                <p class="card-text"><%= campground.description %></p>
+                <% if(currentUser && campground.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin){ %>
+                    <a class="btn btn-sm btn-warning" href="/campgrounds/<%= campground._id %>/edit">Edit</a>
+                    <form class="delete-form" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                <% } %>
+            </div>
+            <div class="card-footer">
+                <em class="text-muted">Submitted By <a href="/users/<%= campground.author.id %>"><%= campground.author.username %></a>, <%= moment(campground.createdAt).fromNow() %></em>
+                    
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="float-left mb-0 mt-2 align-text-bottom"><i class="fas fa-comment-alt"></i> Comments</h5>
+                <a class="btn btn-sm btn-success float-right" role="button" data-toggle="collapse" href="#collapseComment" aria-expanded="false" aria-controls="collapseComment"><i class="fas fa-plus"></i> Add New Comment</a>
+                <!--Collapse Add a comment form START-->
+                <div class="collapse float-left mt-3 w-100" id="collapseComment">
+                    <div class="card" style="border-left: 5px solid #00C851">
+                        <div class="card-header" style="border-bottom: 0">
+                            <% if(!currentUser){ %>
+                                <!--If the user is not logged in, direct him to the login page-->
+                                <h5>You need to login before you can comment. <a href="/login">Click here</a> to go to the login page.</h5>
+                            <% } %>
+                            <% if(currentUser){ %>
+                                <!--If the user is logged in, show the new comment form-->
+                                <h4>Write your comment <i class="fas fa-pencil-alt"></i></h4>
+                                <form id="add-comment-form" action="/campgrounds/<%= campground._id %>/comments" method="POST">
+                                    <div class="form-group">
+                                        <input class="form-control" type="text" value="<%= currentUser.username %>" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea class="form-control" name="comment[text]" placeholder="Write your comment..." form="add-comment-form" rows="5" cols="70"></textarea>
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <button class="btn btn-success btn-sm">Comment</button>
+                                    </div>
+                                </form>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <!--Collapse Add a comment form END-->
+            </div>
+            <div class="card-body">                
+                <div class="row">
+                    <!--Check if there are comments, if there are none say no comments.-->
+                    <% if (campground.comments.length === 0) { %>
+                        <em style="color: grey;">No comments yet.</em>
+                    <% } %>
+                    <% campground.comments.forEach(function(comment){ %>
+                        <div class="col-md-12 mb-2">
+                            <div class="card text-center">
+                                <div class="card-header">
+                                    <strong><a class="card-title" href="/users/<%= comment.author.id %>"><%= comment.author.username %></a></strong>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text"><%= comment.text %></p>
+                                    <% if(currentUser && comment.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin){ %>
+                                        <div>
+                                            <a class="btn btn-sm btn-outline-warning" role="button" data-toggle="collapse" href="#collapseEdit<%= comment._id %>" aria-expanded="false" aria-controls="collapse<%= comment._id %>">Edit</a>
+                                            <form class="delete-form" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=DELETE" method="POST">
+                                                <input class="btn btn-sm btn-outline-danger" type="submit" value="Delete">
+                                            </form>
+                                            <div class="collapse card-body" id="collapseEdit<%= comment._id %>">
+                                                <div class="card mt-3" style="border-left: 5px solid #ffbb33">
+                                                    <h4 class="mt-3">Edit your comment</h4>
+                                                    <form class="ml-3 mr-3" id="edit-comment-form<%= comment._id %>" action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=PUT" method="POST">
+                                                        <div class="form-group">
+                                                            <input class="form-control" type="text" value="<%= currentUser.username %>" disabled>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <textarea class="form-control" name="comment[text]" placeholder="Your comment text..." form="edit-comment-form<%= comment._id %>" rows="5" cols="70"><%= comment.text %></textarea>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <button class="btn btn-warning btn-sm">Edit comment</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% } %>      
+                                </div>
+                                <div class="card-footer text-muted mb-0 mt-0">
+                                    <em><%= moment(comment.createdAt).fromNow() %></em> 
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>   
+    </div>
+</div>
+
+<script>
+  function initMap() {
+    var lat = <%= campground.lat %>;
+    var lng = <%= campground.lng %>;
+    var center = {lat: lat, lng: lng };
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 8,
+        center: center,
+        scrollwheel: false
+    });
+    var contentString = `
+      <strong><%= campground.name %><br />
+      <%= campground.location %></strong>
+      <p><%= campground.description %></p>
+    `
+    var infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+    var marker = new google.maps.Marker({
+        position: center,
+        map: map
+    });
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);
+    });
+  }
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBDZxmS_HJBS3iGDlSQH2Enolhuevyw0VU&callback=initMap"></script>
+
+<% include ../partials/footer %>

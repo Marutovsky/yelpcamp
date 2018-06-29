@@ -1,0 +1,51 @@
+<% include ./partials/header %>
+
+<div class="row">
+    <div class="col-md-12">
+        <form class="form-signup" action="/register" method="post" enctype="multipart/form-data">
+            <h1 class="h1 mb-3 font-weight-normal text-center">Sign Up</h1>
+            <div class="col-md-6 float-left">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input class="form-control" type="text" id="username" name="username" placeholder="username" tabindex="1" autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input class="form-control" type="text" id="firstName" name="firstName" placeholder="first name" tabindex="3">
+                </div>
+            </div>
+            <div class="col-md-6 float-right">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input class="form-control" type="password" id="password" name="password" placeholder="password" tabindex="2">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input class="form-control" type="text" id="lastName" name="lastName" placeholder="last name" tabindex="4">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input class="form-control" type="email" id="email" name="email" placeholder="email" tabindex="5">
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" name="description" id="description" placeholder="max 200 words" maxlength="200" tabindex="6"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="avatar">Avatar</label>
+                <input type="file" id="avatar" name="avatar" accept="image/*" required tabindex="7">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="adminCode" placeholder="admin code">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-lg btn-primary btn-block" tabindex="8">Sign Up!</button>
+            </div>
+        </form>
+        <a href="/campgrounds" tabindex="9">Go Back</a>
+    </div>
+</div>
+
+<% include ./partials/footer %>
